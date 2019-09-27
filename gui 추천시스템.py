@@ -111,7 +111,7 @@ def cosine_similarity(v, w):
 # 1. 유저 베이스 추천 : 유저별 선택/미선택 지역 분류 리스트 만들기
 # 관심이 있다고 한 경우 1, 아닌 경우 0
 
-def make_user_interest_vector():
+def make_user_interest_vector(user_interests):
 	return [1 if interest in user_interests else 0
 	        for interest in unique_interests]
 
@@ -158,7 +158,13 @@ def user_based_suggestion(include_current_interest = False):
 		regionresult = [(suggestion, weight)
 		                for suggestion, weight in suggestions
 		                if suggestion not in user_interests[select1]]
-		print(regionresult)
+
+	idx = 0
+	L4.delete(0, END)
+	for suggested_region in regionresult[:5]:
+		print(suggested_region)
+		L4.insert(0, suggested_region[0])
+		idx += 1
 
 # 2. 아이템 기반 추천
 
@@ -201,7 +207,7 @@ def item_based_suggestion(include_current_interest = False):
 				suggestions[interest] += similarity
 
 	suggestions = sorted(suggestions.items(),
-	                     keys = lambda pair : pair[1],
+	                     key = lambda pair : pair[1],
 	                     reverse = True)
 
 	if include_current_interest:
@@ -212,6 +218,13 @@ def item_based_suggestion(include_current_interest = False):
 		                for suggestion, weight in suggestions
 		                if suggestion not in user_interests[select1]]
 		print(regionresult)
+
+	idx = 0
+	L4.delete(0, END)
+	for suggested_region in regionresult[:5]:
+		L4.insert(idx, suggested_region[0])
+		idx += 1
+
 
 
 # 특정 유저 클릭 시 그 유저가 선택한 목록은 L3로, 선택하지 않은 것만 L2에 남겨두는 함수
@@ -251,9 +264,15 @@ Bt2.place(x = 200, y = 250, width = 120, height = 30)
 Bt3 = Button(root, text = "사용자 추가하기", command = insert_user)
 Bt3.place(x = 200, y = 300, width = 120, height = 30)
 
+Bt4 = Button(root, text = "추가")
+Bt4.place(x = 240, y = 130, width = 30, height = 40)
+
+Bt5 = Button(root, text = "삭제")
+Bt5.place(x = 240, y = 190, width =30, height = 40)
+
 # 리스트 박스
 L1 = Listbox(root)
-L1.bind("<<ListboxsSelect>>", onselect1)
+L1.bind("<<ListboxSelect>>", onselect1)
 L1.place(x = 10, y = 100, width = 100, height = 150)
 
 L2 = Listbox(root)
@@ -263,6 +282,9 @@ L2.place(x = 140, y = 100, width = 100, height = 150)
 L3 = Listbox(root)
 L3.place(x = 270, y = 100, width = 100, height = 150)
 L3.bind("<<ListboxSelect>>", onselect3)
+
+L4 = Listbox(root)
+L4.place(x = 35, y = 360, width = 300, height = 80)
 
 #엔트리
 E1 = Entry(root)
@@ -279,6 +301,7 @@ Lb3= Label(root, text = "선택 여행지 목록")
 Lb3.place(x = 270, y = 70, width = 100, height = 30)
 
 Lb4 = Label(root, text = "추천 여행지 목록")
+Lb4.place(x = 120, y = 340, width = 120, height = 20)
 
 
 root.mainloop()
